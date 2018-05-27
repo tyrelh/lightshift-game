@@ -1,5 +1,5 @@
 
-var fire_rate = 20;
+var fire_rate = 10;
 
 function Lasers(layer) {
     this.lasers = [];
@@ -50,21 +50,27 @@ function Laser(start, angle) {
     this.draw = function() {
 
         push();
-        stroke(color(0,0,255,200));
+        stroke(GLITCH_COLOR_1);
+        strokeWeight(this.r);
+        point(this.pos_history[0].x, this.pos_history[0].y);
+        pop();
+
+        push();
+        stroke(GLITCH_COLOR_3);
+        strokeWeight(this.r);
+        point(this.pos_history[3].x, this.pos_history[3].y);
+        pop();
+
+        push();
+        stroke(GLITCH_COLOR_2);
         strokeWeight(this.r);
         point(this.pos_history[2].x, this.pos_history[2].y);
         pop();
 
         push();
-        stroke(color(255,0,0,255));
+        stroke(MAIN_COLOR);
         strokeWeight(this.r);
         point(this.pos_history[1].x, this.pos_history[1].y);
-        pop();
-
-        push();
-        stroke(255);
-        strokeWeight(this.r);
-        point(this.pos.x, this.pos.y);
         pop();
     }
 

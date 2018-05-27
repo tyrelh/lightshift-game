@@ -1,8 +1,11 @@
 
+var initial_asteroids = 1;
+var min_asteroids = 1;
+
 function Asteroids(layer) {
     this.asteroids = [];
 
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < initial_asteroids; i++) {
         this.asteroids.push(new Asteroid());
     }
 
@@ -23,7 +26,7 @@ function Asteroids(layer) {
         for (var i = 0; i < this.asteroids.length; i++) {
             this.asteroids[i].update();
         }
-        if (this.asteroids.length < 5) {
+        if (this.asteroids.length < min_asteroids) {
             this.asteroids.push(new Asteroid());
         }
     }
@@ -32,6 +35,7 @@ function Asteroids(layer) {
 
 function Asteroid(prev_pos, size) {
     this.visible = true;
+    // set start point
     if (prev_pos) {
         this.pos = prev_pos.copy();
     } else {
@@ -40,22 +44,38 @@ function Asteroid(prev_pos, size) {
             Math.floor((Math.random() * height) + 1)
         );
     }
+    // set size
     if (size) {
         this.r = size * 0.5;
     } else {
         this.r = Math.floor((Math.random() * 30) + 20);
     }
+    // direction
     this.v = p5.Vector.random2D();
-    this.v = this.v.mult(Math.random()+1)
+    // velocity
+    this.v = this.v.add(Math.random()+2)
+    // random information for the shape of the asteroid
     this.num_jags = Math.floor((Math.random() * 10) + 5)
     this.jags = [];
     for (var i = 0; i < this.num_jags; i++) {
         this.jags[i] = (Math.floor((Math.random() * (this.r * 0.5)) - (this.r * 0.25)));
     }
+    // previous location states for glitch effect
     this.pos_history = []
     for (var i = 0; i < 10; i++) {
         this.pos_history.push(this.pos);
     }
+    // sprite
+    this.sprite_x = [];
+    this.sprite_y = [];
+    for (var i = 0; i < this.num_jags; i++) {
+        var angle = map(i, 0, this.num_jags, 0, TWO_PI);
+        var x = (this.r + this.jags[i]) * cos(angle);
+        var y = (this.r + this.jags[i]) * sin(angle);
+        this.sprite_x.push(x);
+        this.sprite_y.push(y);
+    }
+
 
     this.breakup = function() {
         var new_a = []
@@ -67,15 +87,37 @@ function Asteroid(prev_pos, size) {
     this.draw = function() {
         if (this.visible) {
             push();
-            translate(this.pos_history[2], this.pos_history[2].y);
+            translate(this.pos_history[0], this.pos_history[0].y);
             noStroke();
-            fill(color(0, 0, 255, 200));
+            fill(GLITCH_COLOR_1);
+            //shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
-                var angle = map(i, 0, this.num_jags, 0, TWO_PI);
-                var x = (this.r + this.jags[i]) * cos(angle);
-                var y = (this.r + this.jags[i]) * sin(angle);
-                vertex(x, y);
+                vertex(this.sprite_x[i], this.sprite_y[i]);
+            }
+            endShape(CLOSE);
+            pop();
+
+            push();
+            translate(this.pos_history[3], this.pos_history[3].y);
+            noStroke();
+            fill(GLITCH_COLOR_3);
+            //shape(this.sprite);
+            beginShape();
+            for (var i = 0; i < this.num_jags; i++) {
+                vertex(this.sprite_x[i], this.sprite_y[i]);
+            }
+            endShape(CLOSE);
+            pop();
+
+            push();
+            translate(this.pos_history[2], this.pos_history[2].y);
+            noStroke();
+            fill(GLITCH_COLOR_2);
+            // shape(this.sprite);
+            beginShape();
+            for (var i = 0; i < this.num_jags; i++) {
+                vertex(this.sprite_x[i], this.sprite_y[i]);
             }
             endShape(CLOSE);
             pop();
@@ -83,27 +125,11 @@ function Asteroid(prev_pos, size) {
             push();
             translate(this.pos_history[1], this.pos_history[1].y);
             noStroke();
-            fill(color(255, 0, 0, 200));
+            fill(MAIN_COLOR);
+            // shape(this.sprite);;
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
-                var angle = map(i, 0, this.num_jags, 0, TWO_PI);
-                var x = (this.r + this.jags[i]) * cos(angle);
-                var y = (this.r + this.jags[i]) * sin(angle);
-                vertex(x, y);
-            }
-            endShape(CLOSE);
-            pop();
-
-            push();
-            translate(this.pos.x, this.pos.y);
-            noStroke();
-            fill(255);
-            beginShape();
-            for (var i = 0; i < this.num_jags; i++) {
-                var angle = map(i, 0, this.num_jags, 0, TWO_PI);
-                var x = (this.r + this.jags[i]) * cos(angle);
-                var y = (this.r + this.jags[i]) * sin(angle);
-                vertex(x, y);
+                vertex(this.sprite_x[i], this.sprite_y[i]);
             }
             endShape(CLOSE);
             pop();
