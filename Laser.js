@@ -4,6 +4,8 @@ var fire_rate = 10;
 function Lasers(layer) {
     this.lasers = [];
     this.prev_laser = 0;
+    this.visible = true;
+    this.update_check = true;
 
     // add to draw layer
     layer.children.push(this);
@@ -13,23 +15,27 @@ function Lasers(layer) {
     }
 
     this.draw = function() {
-        for (var i = 0; i < this.lasers.length; i++) {
-            this.lasers[i].draw();
+        if (this.visible) {
+            for (var i = 0; i < this.lasers.length; i++) {
+                this.lasers[i].draw();
+            }
         }
     }
 
     this.update = function() {
-        if (keyIsDown(SHIFT)) {
-            if (frameCount - this.prev_laser > fire_rate) {
-                this.newLaser(ship.pos, ship.direction);
-                this.prev_laser = frameCount;
+        if (this.update_check) {
+            if (keyIsDown(SHIFT)) {
+                if (frameCount - this.prev_laser > fire_rate) {
+                    this.newLaser(ship.pos, ship.direction);
+                    this.prev_laser = frameCount;
+                }
             }
-        }
-        for (var i = this.lasers.length - 1; i >= 0; i--) {
-            this.lasers[i].update();
-            this.lasers[i].checkEdges();
-            if (this.lasers[i].spent) {
-                this.lasers.splice(i,1);
+            for (var i = this.lasers.length - 1; i >= 0; i--) {
+                this.lasers[i].update();
+                this.lasers[i].checkEdges();
+                if (this.lasers[i].spent) {
+                    this.lasers.splice(i,1);
+                }
             }
         }
     }
@@ -46,6 +52,8 @@ function Laser(start, angle) {
     for (var i = 0; i < 4; i++) {
         this.pos_history.push(this.pos);
     }
+    LASER_SOUND_1.setVolume(0.5);
+    LASER_SOUND_1.play()
 
     this.draw = function() {
 
@@ -82,7 +90,8 @@ function Laser(start, angle) {
                     var new_asteroids = asteroids.asteroids[i].breakup();
                     asteroids.asteroids.push(new_asteroids[0]);
                     asteroids.asteroids.push(new_asteroids[1]);
-                } 
+                }
+                gui.score.score += Math.floor(asteroids.asteroids[i].r);
                 asteroids.asteroids.splice(i,1);
                 this.spent = true;
                 break;

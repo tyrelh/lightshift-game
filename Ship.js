@@ -1,15 +1,19 @@
 
-function Ship(layer,start_state) {
+let damage_rate = 20;
+let damage_amount = 20;
+
+function Ship(layer) {
     // ship parameters
     this.r = 15;
     this.pos = createVector(width/2,height/2);
     this.pos_history = [];
+    this.prev_hit_frame = 0;
     this.direction = 0;
     this.v = createVector(0,0);
     this.acc = 0;
     this.drag = 0.98;
     this.turn_rate = 0.13;
-    this.state = start_state;
+    this.state = "moveState";
     this.visible = true;
     this.update_check = true;
 
@@ -19,10 +23,11 @@ function Ship(layer,start_state) {
     for (var i = 0; i < 4; i++) {
         this.pos_history.push(this.pos);
     }
-    
 
     // add to draw layer
-    layer.children.push(this);
+    if (layer) {
+        layer.children.push(this);
+    }
 
     // draw to canvas
     this.draw = function() {
@@ -92,7 +97,17 @@ function Ship(layer,start_state) {
 
         this.pos_history.unshift(this.pos.copy());
         this.pos_history.splice(-1,1);
+
+        for (var i = asteroids.asteroids.length - 1; i >= 0; i--) {
+            if (this.hits(asteroids.asteroids[i])) {
+                if (frameCount - this.prev_hit_frame > damage_rate) {
+                    this.health -= damage_amount;
+                    this.prev_hit_frame = frameCount;
+                }
+            }
+        }
         
+        this.checkHealth();
     }
 
     this.idleState = function() {
@@ -115,6 +130,14 @@ function Ship(layer,start_state) {
         this.v.sub(this.acc);
     }
 
+    this.hits = function(asteroid) {
+        var d = dist(this.pos.x, this.pos.y, asteroid.pos.x, asteroid.pos.y);
+        if (d < asteroid.r) {
+            return true;
+        }
+        return false;
+    }
+
     this.checkEdges = function() {
         if (this.pos.x > width + this.r) {
             this.pos.x = -this.r;
@@ -125,6 +148,12 @@ function Ship(layer,start_state) {
             this.pos.y = -this.r;
         } else if (this.pos.y < -this.r) {
             this.pos.y = height + this.r;
+        }
+    }
+
+    this.checkHealth = function() {
+        if (this.health <= 0) {
+            gameOver();
         }
     }
 }

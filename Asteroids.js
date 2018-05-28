@@ -1,9 +1,11 @@
 
 var initial_asteroids = 1;
-var min_asteroids = 1;
+var min_asteroids = 5;
 
 function Asteroids(layer) {
     this.asteroids = [];
+    this.visible = true;
+    this.update_check = true;
 
     for (var i = 0; i < initial_asteroids; i++) {
         this.asteroids.push(new Asteroid());
@@ -90,6 +92,7 @@ function Asteroid(prev_pos, size) {
             translate(this.pos_history[0], this.pos_history[0].y);
             noStroke();
             fill(GLITCH_COLOR_1);
+            //blendMode(ADD);
             //shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
@@ -102,6 +105,7 @@ function Asteroid(prev_pos, size) {
             translate(this.pos_history[3], this.pos_history[3].y);
             noStroke();
             fill(GLITCH_COLOR_3);
+            blendMode(ADD);
             //shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
@@ -114,6 +118,7 @@ function Asteroid(prev_pos, size) {
             translate(this.pos_history[2], this.pos_history[2].y);
             noStroke();
             fill(GLITCH_COLOR_2);
+            blendMode(ADD);
             // shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
