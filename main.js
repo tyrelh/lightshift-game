@@ -1,111 +1,74 @@
-var layer_ship;
-var layer_roids_lasers;
-var ship;
-var asteroids;
-var lasers;
 
+var layer_splash_screen, layer_gui, layer_ship, layer_asteroids, layer_lasers, layer_game_over;
+var game, splash_screen, gui, ship, asteroids, lasers, game_over;
 
 function setup() {
     // inital canvas setup
     createCanvas(window.innerWidth, window.innerHeight);
+    // desired frame rate
+    frameRate(60);
     //createCanvas(600,400)
     background(20,20,22);
-    // layers
-    layer_gui = new ObjectLayer();
-    layer_ship = new ObjectLayer();
-    layer_roids_lasers = new ObjectLayer();
-    layer_title = new ObjectLayer();
-    layer_game_over = new ObjectLayer();
-    // game objects
-    splash_screen = new SplashScreen(layer_title);
-    asteroids = new Asteroids(layer_roids_lasers);
-    lasers = new Lasers(layer_roids_lasers);
-    ship = new Ship(layer_ship);
-    gui = new GUI(layer_gui);
-    game_over = new DeadScreen(layer_game_over);
+    // game state
+    game = new Game();
     
-    // start at title screen
-    setGameInvisible();
+    // layers
+
+    layer_splash_screen = new ObjectLayer();
+    splash_screen = new SplashScreen(layer_splash_screen);
+    game.trackNewLayer(layer_splash_screen, "splash");
+
+    layer_ship = new ObjectLayer();
+    ship = new Ship(layer_ship);
+    game.trackNewLayer(layer_ship, "game");
+
+    layer_asteroids = new ObjectLayer();
+    asteroids = new Asteroids(layer_asteroids);
+    game.trackNewLayer(layer_asteroids, "game");
+
+    layer_lasers = new ObjectLayer();
+    lasers = new Lasers(layer_lasers);
+    game.trackNewLayer(layer_lasers, "game");
+
+    layer_gui = new ObjectLayer();
+    gui = new GUI(layer_gui);
+    game.trackNewLayer(layer_gui, "game");
+
+    layer_game_over = new ObjectLayer();
+    game_over = new DeadScreen(layer_game_over);
+    game.trackNewLayer(layer_game_over, "game_over");
 
     //BG_MUSIC_1.setVolume(0.5);
     //BG_MUSIC_1.play();
 }
 
 function draw() {
-    update(); // game logic
+    // update(); // game logic
     staticRender();
-    render();
+    // render();
+    game.update();
+    game.draw();
 }
-
-
-
 // game logic update
 function update() {
-    layer_roids_lasers.update();
+    console.log(layer_gui);
+    layer_lasers.update();
     layer_ship.update();
+    layer_astroids.update();
     layer_gui.update();
     layer_title.update();
     layer_game_over.update();
 }
-
+// game graphics update
 function render() {
-    layer_roids_lasers.draw();
+    layer_lasers.draw();
     layer_ship.draw();
+    layer_asteroids.draw();
     layer_gui.draw();
     layer_title.draw();
     layer_game_over.draw();
 }
-
+// update static things
 function staticRender() {
     background(2,2,4);
-}
-
-function setGameInvisible() {
-    layer_roids_lasers.visible = false;
-    layer_ship.visible = false;
-    layer_gui.visible = false;
-    layer_game_over.visible = false;
-    layer_roids_lasers.update_check = false;
-    layer_ship.update_check = false;
-    layer_gui.update_check = false;
-    layer_game_over.update_check = false;
-}
-
-function keyPressed() {
-    //console.log(keypressed);
-    if (keyCode === 32) {
-        if (layer_title.visible || layer_game_over.visible) {
-            startGame();
-        }
-    }
-}
-
-function startGame() {
-    // layer_ship = new ObjectLayer();
-    // layer_roids_lasers = new ObjectLayer();
-    // ship = new Ship(layer_ship)
-    // asteroids = new Asteroids(layer_roids_lasers)
-    layer_game_over.visible = false;
-    layer_game_over.update_check = false;
-    layer_title.visible = false;
-    layer_title.update_check = false;
-    layer_roids_lasers.visible = true;
-    layer_ship.visible = true;
-    layer_gui.visible = true;
-    layer_roids_lasers.update_check = true;
-    layer_ship.update_check = true;
-    layer_gui.update_check = true;
-}
-
-function gameOver() {
-    //layer_title.visible = false;
-    //layer_title.update_check = false;
-    layer_roids_lasers.visible = false;
-    layer_ship.visible = false;
-    layer_gui.visible = false;
-    layer_roids_lasers.update_check = false;
-    layer_ship.update_check = false;
-    layer_gui.update_check = false;
-    layer_game_over.visible = true;
-    layer_game_over.update_check = true;
 }

@@ -1,42 +1,47 @@
 
-var initial_asteroids = 1;
-var min_asteroids = 5;
+
 
 function Asteroids(layer) {
     this.asteroids = [];
-    this.visible = true;
-    this.update_check = true;
-
-    for (var i = 0; i < initial_asteroids; i++) {
+    this.min_asteroids = game.getDifficulty();
+    for (var i = 0; i < this.min_asteroids; i++) {
         this.asteroids.push(new Asteroid());
     }
-
     // add to draw layer
     layer.children.push(this);
 
-    this.newAsteroid = function() {
-        this.asteroids.push(new Asteroid());
-    }
-
+    // create new asteroid
+    this.newAsteroid = function() {this.asteroids.push(new Asteroid());}
     this.draw = function() {
         for (var i = 0; i < this.asteroids.length; i++) {
             this.asteroids[i].draw();
         }
     }
-
     this.update = function() {
         for (var i = 0; i < this.asteroids.length; i++) {
             this.asteroids[i].update();
         }
-        if (this.asteroids.length < min_asteroids) {
+        this.min_asteroids = game.getDifficulty();
+        if (this.asteroids.length < this.min_asteroids) {
+            this.asteroids.push(new Asteroid());
+        }
+    }
+    // reset asteroids
+    this.reset = function() {
+        this.asteroids = [];
+        for (var i = 0; i < this.min_asteroids; i++) {
             this.asteroids.push(new Asteroid());
         }
     }
 }
 
-
 function Asteroid(prev_pos, size) {
-    this.visible = true;
+    // set size
+    if (size) {
+        this.r = size * 0.5;
+    } else {
+        this.r = Math.floor((Math.random() * 30) + 20);
+    }
     // set start point
     if (prev_pos) {
         this.pos = prev_pos.copy();
@@ -45,12 +50,6 @@ function Asteroid(prev_pos, size) {
             Math.floor((Math.random() * width) + 1),
             Math.floor((Math.random() * height) + 1)
         );
-    }
-    // set size
-    if (size) {
-        this.r = size * 0.5;
-    } else {
-        this.r = Math.floor((Math.random() * 30) + 20);
     }
     // direction
     this.v = p5.Vector.random2D();
@@ -77,77 +76,64 @@ function Asteroid(prev_pos, size) {
         this.sprite_x.push(x);
         this.sprite_y.push(y);
     }
-
-
+    // split asteroid into two smaller asteroids at same position
     this.breakup = function() {
         var new_a = []
         new_a[0] = new Asteroid(this.pos, this.r);
         new_a[1] = new Asteroid(this.pos, this.r);
         return new_a;
     }
-
     this.draw = function() {
-        if (this.visible) {
-            push();
+        push();
             translate(this.pos_history[0], this.pos_history[0].y);
             noStroke();
             fill(GLITCH_COLOR_1);
             //blendMode(ADD);
-            //shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
                 vertex(this.sprite_x[i], this.sprite_y[i]);
             }
             endShape(CLOSE);
-            pop();
-
-            push();
+        pop();
+        push();
             translate(this.pos_history[3], this.pos_history[3].y);
             noStroke();
             fill(GLITCH_COLOR_3);
             blendMode(ADD);
-            //shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
                 vertex(this.sprite_x[i], this.sprite_y[i]);
             }
             endShape(CLOSE);
-            pop();
-
+        pop();
             push();
             translate(this.pos_history[2], this.pos_history[2].y);
             noStroke();
             fill(GLITCH_COLOR_2);
             blendMode(ADD);
-            // shape(this.sprite);
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
                 vertex(this.sprite_x[i], this.sprite_y[i]);
             }
             endShape(CLOSE);
-            pop();
-
-            push();
+        pop();
+        push();
             translate(this.pos_history[1], this.pos_history[1].y);
             noStroke();
             fill(MAIN_COLOR);
-            // shape(this.sprite);;
             beginShape();
             for (var i = 0; i < this.num_jags; i++) {
                 vertex(this.sprite_x[i], this.sprite_y[i]);
             }
             endShape(CLOSE);
-            pop();
-        }
+        pop();
     }
-
     this.update = function() {
         this.pos.add(this.v);
         this.checkEdges();
         this.pos_history.unshift(this.pos.copy());
         this.pos_history.splice(-1,1);
     }
-
     this.checkEdges = function() {
         if (this.pos.x > width + this.r) {
             this.pos.x = -this.r;

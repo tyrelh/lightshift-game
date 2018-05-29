@@ -1,55 +1,42 @@
 function GUI(layer) {
-    this.health = new Health();
-    this.score = new Score();
-    this.frame_rate = new FrameRate();
+    this.health_display = new Health();
+    this.frame_rate_display = new FrameRate();
+    this.score_display = new Score();
     //this.mute_button = new MuteButton();
-    this.visible = true;
-    this.update_check = true;
 
     // add to draw layer
     layer.children.push(this);
 
     this.update = function() {
-        if (this.update_check) {
-            this.health.update();
-            this.score.update();
-            this.frame_rate.update();
-            //this.mute_button.update();
-        }
+        this.health_display.update();
+        this.score_display.update();
+        this.frame_rate_display.update();
+        //this.mute_button.update();
     }
-
     this.draw = function() {
-        if (this.visible) {
-            this.health.draw();
-            this.score.draw();
-            this.frame_rate.draw();
-            //this.mute_button.draw();
-        }
+        this.health_display.draw();
+        this.score_display.draw();
+        this.frame_rate_display.draw();
+        //this.mute_button.draw();
     }
 }
 
 // function MuteButton() {
-//     this.update = function() {
-
-//     }
-
-//     this.draw = function() {
-
-//     }
+//     this.update = function() {}
+//     this.draw = function() {}
 // }
 
 function FrameRate() {
     this.frame_rate = 0;
     this.text_size = height / 15;
     this.x = (width / 70) * 69;
-    this.y = (height / 11) * 10;
+    this.y = height - (height / 25);
 
     this.update = function() {
         if (frameCount % 8 == 0) {
             this.frame_rate = Math.floor(frameRate());
         }
     }
-
     this.draw = function() {
         push();
             fill(MAIN_COLOR);
@@ -73,12 +60,12 @@ function Score() {
 
     this.update = function() {
         // update history
+        this.score = game.getScore();
         this.score_history.unshift(this.score);
         this.score_history.splice(-1,1);
     }
-
     this.draw = function() {
-
+        // draw glitch effect
         push();
             fill(GLITCH_COLOR_1);
             textSize(this.text_size);
@@ -86,7 +73,6 @@ function Score() {
             textFont(MAIN_FONT);
             text(this.score_history[0], this.x+1, this.y+1);
         pop();
-
         push();
             fill(GLITCH_COLOR_3);
             textSize(this.text_size);
@@ -94,7 +80,6 @@ function Score() {
             textFont(MAIN_FONT);
             text(this.score_history[6], this.x+1, this.y+1);
         pop();
-
         push();
             fill(GLITCH_COLOR_2);
             textSize(this.text_size);
@@ -102,7 +87,6 @@ function Score() {
             textFont(MAIN_FONT);
             text(this.score_history[4], this.x+1, this.y+1);
         pop();
-
         // draw foreground text
         push();
             fill(MAIN_COLOR);
@@ -111,6 +95,13 @@ function Score() {
             textFont(MAIN_FONT);
             text(this.score_history[2], this.x+1, this.y+1);
         pop();
+    }
+    this.reset = function() {
+        this.score = 0;
+        this.score_history = [];
+        for (let i = 0; i < 10; i++) {
+            this.score_history.push(this.score);
+        }
     }
 }
 
@@ -126,14 +117,14 @@ function Health() {
     this.text_size = height / 15;
     this.bar_w = width / 5;
     this.bar_h = height / 20;
+    this.map_val = this.bar_w / 100;
 
     this.update = function() {
-        this.health_amount = ship.health;
+        this.health_amount = ship.getHealth();
         // update history
         this.health_history.unshift(this.health_amount);
         this.health_history.splice(-1,1);
     }
-
     this.draw = function() {
         // draw text
         push();
@@ -142,29 +133,31 @@ function Health() {
             textFont(MAIN_FONT);
             text(this.health_text, this.x+1, this.y+1);
         pop();
-
         // draw bar bg
         push();
             fill(HEALTH_BG_COLOR);
             noStroke();
             rect(this.x, this.y, this.bar_w, this.bar_h);
         pop();
-
-        // draw bar foreground
+        // draw bar glitch effect
         push();
             fill(GLITCH_COLOR_3);
             noStroke();
-            rect(this.x, this.y , map(this.health_history[8], 0, 100, 0, this.bar_w), this.bar_h);
+            //rect(this.x, this.y , map(this.health_history[8], 0, 100, 0, this.bar_w), this.bar_h);
+            rect(this.x, this.y , this.health_history[8] * this.map_val, this.bar_h);
         pop();
         push();
             fill(GLITCH_COLOR_2);
             noStroke();
-            rect(this.x, this.y , map(this.health_history[4], 0, 100, 0, this.bar_w), this.bar_h);
+            //rect(this.x, this.y , map(this.health_history[4], 0, 100, 0, this.bar_w), this.bar_h);
+            rect(this.x, this.y , this.health_history[4] * this.map_val, this.bar_h);
         pop();
+        // draw current health bar
         push();
             fill(MAIN_COLOR);
             noStroke();
-            rect(this.x-1, this.y-1, map(this.health_amount, 0, 100, 0, this.bar_w)+2, this.bar_h+2);
+            //rect(this.x-1, this.y-1, map(this.health_amount, 0, 100, 0, this.bar_w)+2, this.bar_h+2);
+            rect(this.x, this.y , (this.health_amount * this.map_val) + 2, this.bar_h + 2);
         pop();
     }
 }

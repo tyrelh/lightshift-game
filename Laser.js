@@ -10,10 +10,7 @@ function Lasers(layer) {
     // add to draw layer
     layer.children.push(this);
 
-    this.newLaser = function() {
-        this.lasers.push(new Laser(ship.pos, ship.direction));
-    }
-
+    this.newLaser = function() {this.lasers.push(new Laser(ship.pos, ship.direction));}
     this.draw = function() {
         if (this.visible) {
             for (var i = 0; i < this.lasers.length; i++) {
@@ -21,7 +18,6 @@ function Lasers(layer) {
             }
         }
     }
-
     this.update = function() {
         if (this.update_check) {
             if (keyIsDown(SHIFT)) {
@@ -41,19 +37,18 @@ function Lasers(layer) {
     }
 }
 
-
 function Laser(start, angle) {
     this.pos = createVector(start.x, start.y);
     this.v = p5.Vector.fromAngle(angle);
-    this.v.mult(9);
+    this.v.mult(15);
     this.spent = false;
     this.r = 6;
     this.pos_history = []
     for (var i = 0; i < 4; i++) {
         this.pos_history.push(this.pos);
     }
-    LASER_SOUND_1.setVolume(0.5);
-    LASER_SOUND_1.play()
+    //LASER_SOUND_1.setVolume(0.5);
+    //LASER_SOUND_1.play()
 
     this.draw = function() {
 
@@ -91,7 +86,8 @@ function Laser(start, angle) {
                     asteroids.asteroids.push(new_asteroids[0]);
                     asteroids.asteroids.push(new_asteroids[1]);
                 }
-                gui.score.score += Math.floor(asteroids.asteroids[i].r);
+                game.increaseScore(Math.floor(asteroids.asteroids[i].r));
+                //gui.score.score += Math.floor(asteroids.asteroids[i].r);
                 asteroids.asteroids.splice(i,1);
                 this.spent = true;
                 break;
@@ -102,7 +98,8 @@ function Laser(start, angle) {
     }
 
     this.hits = function(asteroid) {
-        var d = dist(this.pos.x, this.pos.y, asteroid.pos.x, asteroid.pos.y);
+        //var d = dist(this.pos.x, this.pos.y, asteroid.pos.x, asteroid.pos.y);
+        let d = calcDist(this.pos, asteroid.pos);
         if (d < asteroid.r) {
             return true;
         }
