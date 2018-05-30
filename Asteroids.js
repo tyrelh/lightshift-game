@@ -52,7 +52,7 @@ function Asteroid(prev_pos, size) {
     // direction
     this.v = p5.Vector.random2D();
     // velocity
-    this.v = this.v.add(Math.random() * 6)
+    this.v = this.v.add((Math.random() - 0.5) * 7)
     // random information for the shape of the asteroid
     this.num_jags = Math.floor((Math.random() * 10) + 5)
     this.jags = [];

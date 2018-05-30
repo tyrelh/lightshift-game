@@ -123,7 +123,7 @@ function Game() {
 }
 // input
 function keyPressed() {
-    //console.log(keypressed);
+    //console.log(keyCode);
     if (keyCode === 32) {
         if (game.getState() == "splash_screen" || game.getState() == "game_over") {
             game.startGame();
@@ -132,6 +132,12 @@ function keyPressed() {
     if (keyCode === CONTROL) {
         if (game.getState() == "in_progress") {
             ship.jump();
+        }
+    }
+    // debugging
+    if (keyCode === 68) {
+        if (game.getState() == "in_progress") {
+            shields.newShield();
         }
     }
 }

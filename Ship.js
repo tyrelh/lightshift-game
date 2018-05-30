@@ -1,8 +1,4 @@
 
-let damage_rate = 20;
-let damage_amount = 20;
-let jump_distance = 200;
-
 function Ship(layer) {
     // ship parameters
     this.r = 15;
@@ -88,9 +84,12 @@ function Ship(layer) {
 
         for (let i = asteroids.asteroids.length - 1; i >= 0; i--) {
             if (this.hits(asteroids.asteroids[i])) {
-                if (frameCount - this.prev_hit_frame > damage_rate) {
-                    this.health -= damage_amount;
+                if (frameCount - this.prev_hit_frame > DAMAGE_RATE) {
+                    if (!shields.checkShields()) {
+                        this.health -= DAMAGE_AMOUNT;
+                    }
                     this.prev_hit_frame = frameCount;
+                    break;
                 }
             }
         }
@@ -100,7 +99,7 @@ function Ship(layer) {
     this.turn = function(angle) {this.direction += angle;}
     this.jump = function() {
         let d = p5.Vector.fromAngle(this.direction);
-        d.mult(jump_distance);
+        d.mult(JUMP_DISTANCE);
         this.pos.add(d);
     }
     this.thrust = function() {
@@ -116,7 +115,7 @@ function Ship(layer) {
     this.hits = function(asteroid) {
         //var d = dist(this.pos.x, this.pos.y, asteroid.pos.x, asteroid.pos.y);
         let d = calcDist(this.pos, asteroid.pos);
-        if (d < asteroid.r) {
+        if (d < asteroid.r + this.r) {
             return true;
         }
         return false;
@@ -136,7 +135,6 @@ function Ship(layer) {
     this.checkHealth = function() {
         if (this.health <= 0) {game.endGame();}
     }
-    this.getHealth = function() {return this.health;}
     this.reset = function() {
         this.pos = createVector(width/2,height/2);
         this.pos_history = [];
@@ -149,13 +147,16 @@ function Ship(layer) {
         this.acc = 0;
         this.health = 100;
     }
-    this.updateColorShift = function() {
-        // color shift amounts
-        this.white_shift = this.v.copy();
-        this.white_shift = this.white_shift.mult(0.8);
-        this.green_shift = this.v.copy();
-        this.green_shift = this.green_shift.mult(0.8);
-        this.blue_shift = this.v.copy();
-        this.blue_shift = this.blue_shift.mult(-3*0.8);
-    }
+    // this.updateColorShift = function() {
+    //     // color shift amounts
+    //     this.white_shift = this.v.copy();
+    //     this.white_shift = this.white_shift.mult(0.8);
+    //     this.green_shift = this.v.copy();
+    //     this.green_shift = this.green_shift.mult(0.8);
+    //     this.blue_shift = this.v.copy();
+    //     this.blue_shift = this.blue_shift.mult(-3*0.8);
+    // }
+    // getters
+    this.getHealth = function() {return this.health;}
+    this.getPos = function() {return this.pos.copy();}
 }

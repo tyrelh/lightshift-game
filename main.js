@@ -1,6 +1,6 @@
 
-var layer_splash_screen, layer_gui, layer_ship, layer_asteroids, layer_lasers, layer_game_over;
-var game, splash_screen, gui, ship, asteroids, lasers, game_over;
+var layer_splash_screen, layer_gui, layer_ship, layer_drops, layer_asteroids, layer_lasers, layer_game_over;
+var game, splash_screen, gui, ship, shields, item_drops, asteroids, lasers, game_over;
 
 function setup() {
     // inital canvas setup
@@ -25,7 +25,12 @@ function setup() {
 
     layer_ship = new ObjectLayer();
     ship = new Ship(layer_ship);
+    shields = new Shields(layer_ship);
     game.trackNewLayer(layer_ship, "game");
+
+    layer_drops = new ObjectLayer();
+    item_drops = new  ItemDrops(layer_drops);
+    game.trackNewLayer(layer_drops, "game");
 
     layer_asteroids = new ObjectLayer();
     asteroids = new Asteroids(layer_asteroids);
