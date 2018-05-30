@@ -115,7 +115,7 @@ function Health() {
     this.x = width / 70;
     this.y = height / 17;
     this.text_size = height / 15;
-    this.bar_w = width / 5;
+    this.bar_w = width / 4;
     this.bar_h = height / 20;
     this.map_val = this.bar_w / 100;
 
