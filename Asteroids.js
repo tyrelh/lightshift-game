@@ -1,6 +1,4 @@
 
-
-
 function Asteroids(layer) {
     this.asteroids = [];
     this.min_asteroids = game.getDifficulty();
@@ -28,7 +26,8 @@ function Asteroids(layer) {
     }
     // reset asteroids
     this.reset = function() {
-        this.asteroids = [];
+        this.min_asteroids = game.getDifficulty();
+        this.asteroids.length = 0;
         for (var i = 0; i < this.min_asteroids; i++) {
             this.asteroids.push(new Asteroid());
         }
@@ -44,17 +43,16 @@ function Asteroid(prev_pos, size) {
     }
     // set start point
     if (prev_pos) {
+        // breaking apart, so use previous position
         this.pos = prev_pos.copy();
     } else {
-        this.pos = createVector(
-            Math.floor((Math.random() * width) + 1),
-            Math.floor((Math.random() * height) + 1)
-        );
+        // new asteroid, so pick new location
+        this.pos = chooseEdgeLocation(this.r);
     }
     // direction
     this.v = p5.Vector.random2D();
     // velocity
-    this.v = this.v.add(Math.random()+2)
+    this.v = this.v.add(Math.random() * 6)
     // random information for the shape of the asteroid
     this.num_jags = Math.floor((Math.random() * 10) + 5)
     this.jags = [];
@@ -62,10 +60,10 @@ function Asteroid(prev_pos, size) {
         this.jags[i] = (Math.floor((Math.random() * (this.r * 0.5)) - (this.r * 0.25)));
     }
     // previous location states for glitch effect
-    this.pos_history = []
-    for (var i = 0; i < 10; i++) {
-        this.pos_history.push(this.pos);
-    }
+    // this.pos_history = []
+    // for (var i = 0; i < 10; i++) {
+    //     this.pos_history.push(this.pos);
+    // }
     // sprite
     this.sprite_x = [];
     this.sprite_y = [];
@@ -76,6 +74,13 @@ function Asteroid(prev_pos, size) {
         this.sprite_x.push(x);
         this.sprite_y.push(y);
     }
+    // color shift amounts
+    this.white_shift = this.v.copy();
+    this.white_shift = this.white_shift.mult(0.8);
+    this.green_shift = this.v.copy();
+    this.green_shift = this.green_shift.mult(0.8);
+    this.blue_shift = this.v.copy();
+    this.blue_shift = this.blue_shift.mult(-3*0.8);
     // split asteroid into two smaller asteroids at same position
     this.breakup = function() {
         var new_a = []
@@ -84,55 +89,50 @@ function Asteroid(prev_pos, size) {
         return new_a;
     }
     this.draw = function() {
-        push();
-            translate(this.pos_history[0], this.pos_history[0].y);
-            noStroke();
-            fill(GLITCH_COLOR_1);
-            //blendMode(ADD);
-            beginShape();
-            for (var i = 0; i < this.num_jags; i++) {
-                vertex(this.sprite_x[i], this.sprite_y[i]);
-            }
-            endShape(CLOSE);
-        pop();
-        push();
-            translate(this.pos_history[3], this.pos_history[3].y);
-            noStroke();
-            fill(GLITCH_COLOR_3);
-            blendMode(ADD);
-            beginShape();
-            for (var i = 0; i < this.num_jags; i++) {
-                vertex(this.sprite_x[i], this.sprite_y[i]);
-            }
-            endShape(CLOSE);
-        pop();
+        let i;
             push();
-            translate(this.pos_history[2], this.pos_history[2].y);
-            noStroke();
-            fill(GLITCH_COLOR_2);
-            blendMode(ADD);
-            beginShape();
-            for (var i = 0; i < this.num_jags; i++) {
-                vertex(this.sprite_x[i], this.sprite_y[i]);
-            }
-            endShape(CLOSE);
-        pop();
-        push();
-            translate(this.pos_history[1], this.pos_history[1].y);
-            noStroke();
-            fill(MAIN_COLOR);
-            beginShape();
-            for (var i = 0; i < this.num_jags; i++) {
-                vertex(this.sprite_x[i], this.sprite_y[i]);
-            }
-            endShape(CLOSE);
-        pop();
+                translate(this.pos.x, this.pos.y);
+                // noStroke();
+                fill(GLITCH_COLOR_1);
+                blendMode(ADD);
+                beginShape();
+                for (i = 0; i < this.num_jags; i++) {
+                    vertex(this.sprite_x[i], this.sprite_y[i]);
+                }
+                endShape(CLOSE);
+
+                translate(this.blue_shift.x, this.blue_shift.y);
+                fill(GLITCH_COLOR_3);
+                beginShape();
+                for (i = 0; i < this.num_jags; i++) {
+                    vertex(this.sprite_x[i], this.sprite_y[i]);
+                }
+                endShape(CLOSE);
+
+                translate(this.green_shift.x, this.green_shift.y);
+                fill(GLITCH_COLOR_2);
+                beginShape();
+                for (i = 0; i < this.num_jags; i++) {
+                    vertex(this.sprite_x[i], this.sprite_y[i]);
+                }
+                endShape(CLOSE);
+
+                translate(this.white_shift.x, this.white_shift.y);
+                blendMode(BLEND);
+                fill(MAIN_COLOR);
+                beginShape();
+                for (i = 0; i < this.num_jags; i++) {
+                    vertex(this.sprite_x[i], this.sprite_y[i]);
+                }
+                endShape(CLOSE);
+            pop();
+        // }
     }
     this.update = function() {
         this.pos.add(this.v);
         this.checkEdges();
-        this.pos_history.unshift(this.pos.copy());
-        this.pos_history.splice(-1,1);
+        //this.pos_history.unshift(this.pos.copy());
+        //this.pos_history.splice(-1,1);
     }
     this.checkEdges = function() {
         if (this.pos.x > width + this.r) {
@@ -146,4 +146,17 @@ function Asteroid(prev_pos, size) {
             this.pos.y = height + this.r;
         }
     }
+}
+
+function chooseEdgeLocation(r) {
+    let edge = Math.floor(Math.random() * 2);
+    let x,y;
+    if (edge == 0) {
+        x = width + r;
+        y = Math.floor(Math.random() * height);
+    } else if (edge == 1) {
+        x = Math.floor(Math.random() * width);
+        y = height + r;
+    }
+    return createVector(x,y);
 }

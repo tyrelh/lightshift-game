@@ -9,7 +9,6 @@ function DeadScreen(layer) {
         this.game_over_text.update();
         this.restart_text.update();
     }
-
     this.draw = function() {
         this.game_over_text.draw();
         this.restart_text.draw();
@@ -23,12 +22,8 @@ function GameOverText() {
     this.x = width / 2;
     this.y = (height / 2) + 2;
 
-    this.update = function() {
-
-    }
-
+    this.update = function() {}
     this.draw = function() {
-
         push();
             fill(GLITCH_COLOR_1);
             textSize(this.text_size);
@@ -47,10 +42,7 @@ function RestartText() {
     this.x = width / 2;
     this.y = (height / 2) + 2;
 
-    this.update = function() {
-
-    }
-
+    this.update = function() {}
     this.draw = function() {
         push();
             fill(GLITCH_COLOR_1);

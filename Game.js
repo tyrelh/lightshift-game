@@ -33,6 +33,7 @@ function Game() {
             for (i = 0; i < this.game_layers.length; i++) {
                 this.game_layers[i].draw();
             }
+            //noLoop();
         } else if (this.state == "splash_screen") {
             for (i = 0; i < this.splash_layers.length; i++) {
                 this.splash_layers[i].draw();
@@ -105,7 +106,7 @@ function Game() {
         }
     }
     // getters
-    this.getDifficulty = function() {return this.base_difficulty + Math.floor((this.score / 100));}
+    this.getDifficulty = function() {return this.base_difficulty + Math.floor((this.score / 50));}
     this.getScore = function() {return this.score;}
     this.getState = function() {return this.state;}
     this.trackNewLayer = function(layer, state) {
@@ -120,7 +121,6 @@ function Game() {
         }
     }
 }
-
 // input
 function keyPressed() {
     //console.log(keypressed);

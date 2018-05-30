@@ -9,6 +9,7 @@ function setup() {
     frameRate(60);
     //createCanvas(600,400)
     background(20,20,22);
+    noStroke();
     // game state
     game = new Game();
     
@@ -18,6 +19,10 @@ function setup() {
     splash_screen = new SplashScreen(layer_splash_screen);
     game.trackNewLayer(layer_splash_screen, "splash");
 
+    layer_lasers = new ObjectLayer();
+    lasers = new Lasers(layer_lasers);
+    game.trackNewLayer(layer_lasers, "game");
+
     layer_ship = new ObjectLayer();
     ship = new Ship(layer_ship);
     game.trackNewLayer(layer_ship, "game");
@@ -25,10 +30,6 @@ function setup() {
     layer_asteroids = new ObjectLayer();
     asteroids = new Asteroids(layer_asteroids);
     game.trackNewLayer(layer_asteroids, "game");
-
-    layer_lasers = new ObjectLayer();
-    lasers = new Lasers(layer_lasers);
-    game.trackNewLayer(layer_lasers, "game");
 
     layer_gui = new ObjectLayer();
     gui = new GUI(layer_gui);

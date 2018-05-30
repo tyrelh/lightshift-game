@@ -18,6 +18,13 @@ function Ship(layer) {
     this.turn_rate = 0.13;
     this.prev_hit_frame = 0;
     this.health = 100;
+    // color shift amounts
+    // this.white_shift = this.v.copy();
+    // this.white_shift = this.white_shift.mult(0.8);
+    // this.green_shift = this.v.copy();
+    // this.green_shift = this.green_shift.mult(0.8);
+    // this.blue_shift = this.v.copy();
+    // this.blue_shift = this.blue_shift.mult(-3*0.8);
 
     // add to draw layer
     layer.children.push(this);
@@ -26,11 +33,11 @@ function Ship(layer) {
     this.draw = function() {
         // draw glitch effect
         push();
-            translate(this.pos_history[0].x, this.pos_history[0].y);
+            translate(this.pos.x, this.pos.y);
             rotate(this.direction + HALF_PI);
             fill(GLITCH_COLOR_1);
             blendMode(ADD);
-            noStroke();
+            // noStroke();
             triangle(-this.r,this.r-3,this.r,this.r-3,0,-this.r-3);
         pop();
         push();
@@ -38,7 +45,7 @@ function Ship(layer) {
             rotate(this.direction + HALF_PI);
             fill(GLITCH_COLOR_3);
             blendMode(ADD);
-            noStroke();
+            // noStroke();
             triangle(-this.r,this.r-3,this.r,this.r-3,0,-this.r-3);
         pop();
         push();
@@ -46,15 +53,15 @@ function Ship(layer) {
             rotate(this.direction + HALF_PI);
             fill(GLITCH_COLOR_2);
             blendMode(ADD);
-            noStroke();
+            // noStroke();
             triangle(-this.r,this.r-3,this.r,this.r-3,0,-this.r-3);
         pop();
-        // draw ship
+        // // draw ship
         push();
             translate(this.pos_history[1].x, this.pos_history[1].y);
             rotate(this.direction + HALF_PI);
             fill(MAIN_COLOR);
-            noStroke();
+            // noStroke();
             triangle(-this.r,this.r-3,this.r,this.r-3,0,-this.r-3);
         pop();
     }
@@ -77,6 +84,7 @@ function Ship(layer) {
 
         this.pos_history.unshift(this.pos.copy());
         this.pos_history.splice(-1,1);
+        // this.updateColorShift();
 
         for (let i = asteroids.asteroids.length - 1; i >= 0; i--) {
             if (this.hits(asteroids.asteroids[i])) {
@@ -86,7 +94,6 @@ function Ship(layer) {
                 }
             }
         }
-        
         this.checkHealth();
     }
 
@@ -141,5 +148,14 @@ function Ship(layer) {
         this.v = createVector(0,0);
         this.acc = 0;
         this.health = 100;
+    }
+    this.updateColorShift = function() {
+        // color shift amounts
+        this.white_shift = this.v.copy();
+        this.white_shift = this.white_shift.mult(0.8);
+        this.green_shift = this.v.copy();
+        this.green_shift = this.green_shift.mult(0.8);
+        this.blue_shift = this.v.copy();
+        this.blue_shift = this.blue_shift.mult(-3*0.8);
     }
 }
