@@ -2,34 +2,28 @@
 function Lasers(layer) {
     this.lasers = [];
     this.prev_laser = 0;
-    this.visible = true;
-    this.update_check = true;
 
     // add to draw layer
     layer.children.push(this);
 
     this.newLaser = function() {this.lasers.push(new Laser(ship.pos, ship.direction));}
     this.draw = function() {
-        if (this.visible) {
-            for (var i = 0; i < this.lasers.length; i++) {
-                this.lasers[i].draw();
-            }
+        for (var i = 0; i < this.lasers.length; i++) {
+            this.lasers[i].draw();
         }
     }
     this.update = function() {
-        if (this.update_check) {
-            if (keyIsDown(SHIFT)) {
-                if (frameCount - this.prev_laser > FIRE_RATE) {
-                    this.newLaser(ship.pos, ship.direction);
-                    this.prev_laser = frameCount;
-                }
+        if (keyIsDown(SHIFT)) {
+            if (frameCount - this.prev_laser > FIRE_RATE) {
+                this.newLaser(ship.pos, ship.direction);
+                this.prev_laser = frameCount;
             }
-            for (var i = this.lasers.length - 1; i >= 0; i--) {
-                this.lasers[i].update();
-                this.lasers[i].checkEdges();
-                if (this.lasers[i].spent) {
-                    this.lasers.splice(i,1);
-                }
+        }
+        for (var i = this.lasers.length - 1; i >= 0; i--) {
+            this.lasers[i].update();
+            this.lasers[i].checkEdges();
+            if (this.lasers[i].spent) {
+                this.lasers.splice(i,1);
             }
         }
     }
@@ -74,22 +68,19 @@ function Laser(start, angle) {
 
     this.update = function() {
         this.pos.add(this.v)
+        // need to check each asteroid for collision
         for (var i = asteroids.asteroids.length - 1; i >= 0; i--) {
+            // if the laser hits an asteroid
             if (this.hits(asteroids.asteroids[i])) {
-                if (asteroids.asteroids[i].r > 15) {
-                    let new_asteroids = asteroids.asteroids[i].breakup();
-                    asteroids.asteroids.push(new_asteroids[0]);
-                    asteroids.asteroids.push(new_asteroids[1]);
-                    if (Math.floor(game.getScore() / SHIELD_DROP_RATE) > item_drops.getNumShieldDrops()) {
-                        //console.log("num shields so far: " + shields.getNumShields());
-                        // console.log("score within laser hit: " + game)                                              
+                // if the asteroid is above a certain size
+                if (asteroids.asteroids[i].r > MIN_ASTEROID_SIZE) {
+                    asteroids.asteroids[i].breakup();
+                    if (Math.floor(game.getScore() / SHIELD_DROP_RATE) > item_drops.getNumShieldDrops()) {                       
                         item_drops.newShieldDrop(asteroids.asteroids[i].pos);
                     }
-                    
                 }
                 game.increaseScore(Math.floor(asteroids.asteroids[i].r));
-                //gui.score.score += Math.floor(asteroids.asteroids[i].r);
-                asteroids.asteroids.splice(i,1);
+                asteroids.removeAsteroid(i);
                 this.spent = true;
                 break;
             }
@@ -99,7 +90,6 @@ function Laser(start, angle) {
     }
 
     this.hits = function(asteroid) {
-        //var d = dist(this.pos.x, this.pos.y, asteroid.pos.x, asteroid.pos.y);
         let d = calcDist(this.pos, asteroid.pos);
         if (d < asteroid.r + this.r) {
             return true;

@@ -48,31 +48,11 @@ function setup() {
     //BG_MUSIC_1.play();
 }
 
+// draw loop occurs at framerate
 function draw() {
-    // update(); // game logic
     staticRender();
-    // render();
     game.update();
     game.draw();
-}
-// game logic update
-function update() {
-    console.log(layer_gui);
-    layer_lasers.update();
-    layer_ship.update();
-    layer_astroids.update();
-    layer_gui.update();
-    layer_title.update();
-    layer_game_over.update();
-}
-// game graphics update
-function render() {
-    layer_lasers.draw();
-    layer_ship.draw();
-    layer_asteroids.draw();
-    layer_gui.draw();
-    layer_title.draw();
-    layer_game_over.draw();
 }
 // update static things
 function staticRender() {

@@ -1,3 +1,4 @@
+
 function GUI(layer) {
     this.health_display = new Health();
     this.frame_rate_display = new FrameRate();

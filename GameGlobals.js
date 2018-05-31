@@ -7,11 +7,12 @@ var MAIN_COLOR = "#FFFFFF";
 var HEALTH_BG_COLOR = "#FFFFFF11";
 
 // gameplay
-var DAMAGE_RATE = 60; // frames between taking damage multiple times
+var DAMAGE_RATE = 40; // frames between taking damage multiple times
 var DAMAGE_AMOUNT = 20; // amount of damage taken with each asteroid hit
 var JUMP_DISTANCE = 200; // distance to move for each jump action
-var FIRE_RATE = 10; // frames between each laser blast
-var SHIELD_DROP_RATE = 500; // score intervals to drop shields
+var FIRE_RATE = 9; // frames between each laser blast
+var SHIELD_DROP_RATE = 1000; // score intervals to drop shields
+var MIN_ASTEROID_SIZE = 15; // smallest r value for an asteroid
 
 
 var MAIN_FONT;
